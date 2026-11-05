@@ -12,6 +12,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Mermaid.js for Automated Workflow Flowchart -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <!-- Fallback dataset for GitHub Pages live static hosting -->
+  <script src="fallback_data.js"></script>
 
   <script>
     tailwind.config = {
@@ -1298,12 +1300,22 @@
           currentUser = json.user;
           localStorage.setItem('queryx_user', JSON.stringify(currentUser));
           initWorkspace();
+          return;
         } else {
           errBox.innerText = json.message || 'Authentication failed';
           errBox.classList.remove('hidden');
+          return;
         }
       } catch(err) {
-        errBox.innerText = 'Network error: ' + err.message;
+        // Fallback for static GitHub Pages hosting
+        const fallbackUser = (window.FALLBACK_USERS || []).find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+        if (fallbackUser) {
+          currentUser = fallbackUser;
+          localStorage.setItem('queryx_user', JSON.stringify(currentUser));
+          initWorkspace();
+          return;
+        }
+        errBox.innerText = 'Invalid credentials. Access restricted to Admin & Agent personnel only.';
         errBox.classList.remove('hidden');
       }
     }
@@ -1404,8 +1416,18 @@
           renderKanban();
           renderOmnichannelList();
           renderCharts();
+          return;
         }
-      } catch (e) {}
+      } catch (e) {
+        if (window.FALLBACK_TICKETS) {
+          tickets = window.FALLBACK_TICKETS;
+          updateDashboardMetrics();
+          renderTicketTable();
+          renderKanban();
+          renderOmnichannelList();
+          renderCharts();
+        }
+      }
     }
 
     async function fetchAgents() {
@@ -1415,8 +1437,14 @@
         if (json.success) {
           agentsList = json.data;
           renderAgentsTable();
+          return;
         }
-      } catch (e) {}
+      } catch (e) {
+        if (window.FALLBACK_USERS) {
+          agentsList = window.FALLBACK_USERS;
+          renderAgentsTable();
+        }
+      }
     }
 
     async function fetchBillingData() {
@@ -1429,8 +1457,14 @@
         if (json.success) {
           billingData = json.data;
           renderBillingTable();
+          return;
         }
-      } catch(e) {}
+      } catch(e) {
+        if (window.FALLBACK_BILLING) {
+          billingData = window.FALLBACK_BILLING;
+          renderBillingTable();
+        }
+      }
     }
 
     async function fetchBusinessAutomata() {
@@ -1441,8 +1475,54 @@
           businessAutomataData = json.data;
           renderBusinessAutomataUI();
           renderProcessFlowchart();
+          return;
         }
-      } catch(e) {}
+      } catch(e) {
+        // Fallback calculation for GitHub Pages live demo
+        const total = (tickets.length || 4);
+        const resolved = tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed').length || 2;
+        const fixRate = ((resolved / total) * 100).toFixed(1);
+        businessAutomataData = {
+          totalTickets: total,
+          fixedRatePercentage: fixRate + '%',
+          activeCount: total - resolved,
+          topServiceAgent: { name: 'Jason Duong', avatar: 'JD', fixRate: '100.0', avgSpeed: '1.8 hrs' },
+          weeklyMajorIssues: [
+            { issueName: 'Technical', count: 2, percentage: '50.0', trend: '+14% vs last week', severity: 'High' },
+            { issueName: 'Billing', count: 1, percentage: '25.0', trend: '-5% vs last week', severity: 'High' },
+            { issueName: 'Other', count: 1, percentage: '25.0', trend: '-5% vs last week', severity: 'Normal' }
+          ],
+          agentPerformance: [
+            { name: 'Jason Duong', avatar: 'JD', assigned: 2, resolved: 2, fixRate: '100.0', avgSpeed: '1.8 hrs' },
+            { name: 'Nhi Pham', avatar: 'NP', assigned: 2, resolved: 1, fixRate: '50.0', avgSpeed: '2.1 hrs' }
+          ],
+          trendDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          incomingTrends: [12, 19, 24, 28, 32, 18, 14],
+          resolvedTrends: [10, 17, 22, 26, 30, 17, 13],
+          hourlyLabels: ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'],
+          hourlyInboundQueries: [4, 7, 12, 19, 14, 23, 31, 28, 22, 15],
+          hourlyResolvedQueries: [2, 5, 10, 16, 13, 21, 29, 27, 21, 14],
+          channelHourlyPerformance: [
+            { hour: '10:00 - 11:00', channel: 'Telegram', agent: 'Jason Duong', solved: 4 },
+            { hour: '11:00 - 12:00', channel: 'Email', agent: 'Jason Duong', solved: 6 },
+            { hour: '13:00 - 14:00', channel: 'Messenger', agent: 'Nhi Pham', solved: 5 },
+            { hour: '14:00 - 15:00', channel: 'Instagram', agent: 'Nhi Pham', solved: 7 }
+          ],
+          automataGeneratedMermaid: `flowchart LR
+    A["Inbound Customers\\n(TG, FB, IG, Email)"]:::nodeStyle --> B["QueryX Gateway Router\\n(4 Live Channels)"]:::nodeStyle
+    B --> C{"Auto Ingestion\\n(4 Tickets Active)"}:::decisionStyle
+    C -- "Routing" --> D["Agent Assigned Queue\\n(Jason Duong)"]:::nodeStyle
+    D --> E["Resolution Engine\\n(Problem Fixed Rate: 50.0%)"]:::nodeStyle
+    E --> F["Automated Billing & Ledger\\n(£1250/mo UK Plan)"]:::nodeStyle
+    F --> G(["Live SLA Compliance: 99.4%"]):::endStyle
+
+    classDef nodeStyle fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef decisionStyle fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#fff;
+    classDef endStyle fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff;`
+        };
+        renderBusinessAutomataUI();
+        renderProcessFlowchart();
+      }
     }
 
     async function fetchIntegrations() {
