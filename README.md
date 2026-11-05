@@ -129,3 +129,8 @@ For full WebSocket connectivity and active omnichannel long-polling:
 
 ## License
 Proprietary enterprise software developed for QueryX UK Operations.
+
+## Live demo
+
+Live link : https://mahmudul20-42895-1.github.io/QueryX/
+
