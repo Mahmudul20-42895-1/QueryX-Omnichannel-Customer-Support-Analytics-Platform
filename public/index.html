@@ -1284,11 +1284,27 @@
 
     async function handleLoginSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value.trim();
       const errBox = document.getElementById('loginErrorMsg');
       errBox.classList.add('hidden');
 
+      // Check client-side / fallback users first (instant login on GitHub Pages & offline)
+      const userList = window.FALLBACK_USERS || [
+        { id: "usr_admin", name: "Admin Director", email: "admin@queryx.io", password: "admin", role: "Admin", avatar: "AD", department: "Executive Operations & Billing" },
+        { id: "usr_agent1", name: "Jason Duong", email: "agent@queryx.io", password: "agent", role: "Agent", avatar: "JD", department: "Technical Escalations" },
+        { id: "usr_agent2", name: "Nhi Pham", email: "nhi@queryx.io", password: "agent", role: "Agent", avatar: "NP", department: "Customer Success & Resolution" }
+      ];
+
+      const matched = userList.find(u => u.email.toLowerCase() === email && u.password === password);
+      if (matched) {
+        currentUser = matched;
+        localStorage.setItem('queryx_user', JSON.stringify(currentUser));
+        initWorkspace();
+        return;
+      }
+
+      // If backend API is reachable, query server
       try {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
@@ -1307,15 +1323,7 @@
           return;
         }
       } catch(err) {
-        // Fallback for static GitHub Pages hosting
-        const fallbackUser = (window.FALLBACK_USERS || []).find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-        if (fallbackUser) {
-          currentUser = fallbackUser;
-          localStorage.setItem('queryx_user', JSON.stringify(currentUser));
-          initWorkspace();
-          return;
-        }
-        errBox.innerText = 'Invalid credentials. Access restricted to Admin & Agent personnel only.';
+        errBox.innerText = 'Invalid credentials. Please use admin@queryx.io / admin or agent@queryx.io / agent';
         errBox.classList.remove('hidden');
       }
     }
