@@ -1,0 +1,165 @@
+[
+  {
+    "id": "QX-1001",
+    "subject": "SSO SAML configuration failing on IdP callback",
+    "description": "Our enterprise Okta integration returns HTTP 500 when users redirect back from login portal.",
+    "category": "Technical",
+    "priority": "High",
+    "status": "Resolved",
+    "channel": "Email",
+    "platform": "Email",
+    "externalChatId": null,
+    "customer": {
+      "name": "Sarah Jenkins",
+      "email": "customer@example.com",
+      "role": "Customer"
+    },
+    "assignee": {
+      "name": "Jason Duong",
+      "email": "agent@queryx.io",
+      "avatar": "JD"
+    },
+    "health": "Warning",
+    "createdAt": "2026-11-04T23:21:31.609Z",
+    "conversations": [
+      {
+        "id": "m_1",
+        "author": "Sarah Jenkins",
+        "senderRole": "Customer",
+        "time": "3 hours ago",
+        "text": "Hi support team, Okta SAML callback throws 500 internal server error. Please check.",
+        "isInternal": false,
+        "platform": "Email"
+      },
+      {
+        "id": "m_2",
+        "author": "Jason Duong",
+        "senderRole": "Support Agent",
+        "time": "1 hour ago",
+        "text": "Looking into the auth proxy certificates now.",
+        "isInternal": false,
+        "platform": "Email"
+      },
+      {
+        "id": "msg_1793845620936",
+        "author": "Jason Duong",
+        "senderRole": "Support Agent",
+        "time": "08:27 AM",
+        "text": "hashdsdjhs",
+        "isInternal": false,
+        "platform": "Email"
+      }
+    ]
+  },
+  {
+    "id": "QX-1002",
+    "subject": "Payment deducted twice for annual enterprise plan",
+    "description": "Credit card charged $480 twice on checkout, dashboard still shows Free tier.",
+    "category": "Billing",
+    "priority": "Urgent",
+    "status": "In Progress",
+    "channel": "Telegram",
+    "platform": "Telegram",
+    "externalChatId": "tg_77192",
+    "customer": {
+      "name": "David Kim",
+      "email": "david@fastops.kr",
+      "role": "Customer"
+    },
+    "assignee": {
+      "name": "Jason Duong",
+      "email": "agent@queryx.io",
+      "avatar": "JD"
+    },
+    "health": "Breached",
+    "createdAt": "2026-11-04T20:21:31.609Z",
+    "conversations": [
+      {
+        "id": "m_3",
+        "author": "David Kim",
+        "senderRole": "Customer",
+        "time": "6 hours ago",
+        "text": "Hey! Telegram bot replied, but payment charged twice. Transaction ref TXN-49191.",
+        "isInternal": false,
+        "platform": "Telegram"
+      }
+    ]
+  },
+  {
+    "id": "QX-1003",
+    "subject": "Facebook Ad lead asking about API Rate Limits",
+    "description": "Inquiry received via Facebook page direct message asking for enterprise API limits.",
+    "category": "Technical",
+    "priority": "Medium",
+    "status": "Waiting for Customer",
+    "channel": "Messenger",
+    "platform": "Messenger",
+    "externalChatId": "fb_992120",
+    "customer": {
+      "name": "Elena Rostova",
+      "email": "elena@client.eu",
+      "role": "Customer"
+    },
+    "assignee": {
+      "name": "Nhi Pham",
+      "email": "nhi@queryx.io",
+      "avatar": "NP"
+    },
+    "health": "On Track",
+    "createdAt": "2026-11-04T08:21:31.609Z",
+    "conversations": [
+      {
+        "id": "m_4",
+        "author": "Elena Rostova",
+        "senderRole": "Customer",
+        "time": "Yesterday",
+        "text": "Hello! We run 10M requests daily. Can your endpoints handle our webhook throughput?",
+        "isInternal": false,
+        "platform": "Messenger"
+      },
+      {
+        "id": "m_5",
+        "author": "Nhi Pham",
+        "senderRole": "Support Agent",
+        "time": "5 hours ago",
+        "text": "Hi Elena! Yes, our Tier-3 Dedicated plan offers 25k req/min with automatic bursting.",
+        "isInternal": false,
+        "platform": "Messenger"
+      }
+    ]
+  },
+  {
+    "id": "QX-1004",
+    "subject": "Instagram DM: Product influencer partnership inquiry",
+    "description": "Customer sent DM asking about enterprise sponsorship and API discount codes.",
+    "category": "Other",
+    "priority": "Low",
+    "status": "Resolved",
+    "channel": "Instagram",
+    "platform": "Instagram",
+    "externalChatId": "ig_44210",
+    "customer": {
+      "name": "Alex Rivera",
+      "email": "alex@creatorhub.co",
+      "role": "Customer"
+    },
+    "assignee": {
+      "name": "Nhi Pham",
+      "email": "nhi@queryx.io",
+      "avatar": "NP"
+    },
+    "health": "On Track",
+    "createdAt": "2026-11-03T20:21:31.609Z",
+    "conversations": [
+      {
+        "id": "m_6",
+        "author": "Alex Rivera",
+        "senderRole": "Customer",
+        "time": "2 days ago",
+        "text": "Sent DM on Instagram regarding sponsorship agreement for QueryX launch.",
+        "isInternal": false,
+        "platform": "Instagram"
+      }
+    ]
+  }
+]

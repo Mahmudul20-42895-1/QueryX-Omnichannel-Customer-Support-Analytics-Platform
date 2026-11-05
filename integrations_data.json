@@ -1,0 +1,39 @@
+{
+  "telegram": {
+    "platform": "Telegram",
+    "enabled": false,
+    "botToken": "",
+    "botUsername": "",
+    "status": "Disconnected",
+    "webhookUrl": "",
+    "lastSync": null
+  },
+  "messenger": {
+    "platform": "Facebook Messenger",
+    "enabled": false,
+    "pageId": "",
+    "pageAccessToken": "",
+    "verifyToken": "queryx_verify_token_2026",
+    "status": "Disconnected",
+    "lastSync": null
+  },
+  "instagram": {
+    "platform": "Instagram Direct",
+    "enabled": false,
+    "igAccountId": "",
+    "accessToken": "",
+    "status": "Disconnected",
+    "lastSync": null
+  },
+  "email": {
+    "platform": "Email (SMTP/IMAP)",
+    "enabled": false,
+    "smtpHost": "",
+    "smtpPort": 587,
+    "smtpUser": "",
+    "smtpPass": "",
+    "fromEmail": "support@queryx.io",
+    "status": "Disconnected",
+    "lastSync": null
+  }
+}

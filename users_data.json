@@ -1,0 +1,38 @@
+[
+  {
+    "id": "usr_admin",
+    "name": "Admin Director",
+    "email": "admin@queryx.io",
+    "password": "admin",
+    "role": "Admin",
+    "avatar": "AD",
+    "department": "Executive Management"
+  },
+  {
+    "id": "usr_agent1",
+    "name": "Jason Duong",
+    "email": "agent@queryx.io",
+    "password": "agent",
+    "role": "Support Agent",
+    "avatar": "JD",
+    "department": "Technical Escalations"
+  },
+  {
+    "id": "usr_agent2",
+    "name": "Nhi Pham",
+    "email": "nhi@queryx.io",
+    "password": "agent",
+    "role": "Support Agent",
+    "avatar": "NP",
+    "department": "Customer Success"
+  },
+  {
+    "id": "usr_cust1",
+    "name": "Sarah Jenkins",
+    "email": "customer@example.com",
+    "password": "customer",
+    "role": "Customer",
+    "avatar": "SJ",
+    "organization": "Acme Corp Ltd"
+  }
+]

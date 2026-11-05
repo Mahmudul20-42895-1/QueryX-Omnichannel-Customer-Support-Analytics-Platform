@@ -1,0 +1,68 @@
+{
+  "subscription": {
+    "planName": "Enterprise Tier UK",
+    "status": "Active",
+    "monthlyPrice": 1250,
+    "currency": "GBP (£)",
+    "billingCycle": "Annual (Billed Monthly)",
+    "renewsOn": "2027-01-15",
+    "seatsActive": 18,
+    "seatsTotal": 25,
+    "connectedChannels": 4,
+    "slaTargetCompliance": "99.4%"
+  },
+  "invoices": [
+    {
+      "invoiceId": "INV-2026-0091",
+      "date": "2026-11-01",
+      "dueDate": "2026-11-15",
+      "amount": "£1,250.00",
+      "status": "Paid",
+      "paymentMethod": "Corporate Wire Transfer •••• 9821",
+      "pdfUrl": "#"
+    },
+    {
+      "invoiceId": "INV-2026-0082",
+      "date": "2026-10-01",
+      "dueDate": "2026-10-15",
+      "amount": "£1,250.00",
+      "status": "Paid",
+      "paymentMethod": "Corporate Wire Transfer •••• 9821",
+      "pdfUrl": "#"
+    },
+    {
+      "invoiceId": "INV-2026-0071",
+      "date": "2026-09-01",
+      "dueDate": "2026-09-15",
+      "amount": "£1,480.00",
+      "status": "Paid",
+      "paymentMethod": "Mastercard •••• 4129",
+      "pdfUrl": "#"
+    },
+    {
+      "invoiceId": "INV-2026-0063",
+      "date": "2026-08-01",
+      "dueDate": "2026-08-15",
+      "amount": "£1,250.00",
+      "status": "Paid",
+      "paymentMethod": "Mastercard •••• 4129",
+      "pdfUrl": "#"
+    }
+  ],
+  "paymentMethods": [
+    {
+      "id": "pm_1",
+      "type": "Bank Transfer",
+      "name": "Barclays Corporate UK Account",
+      "accountEnding": "9821",
+      "isPrimary": true
+    },
+    {
+      "id": "pm_2",
+      "type": "Corporate Card",
+      "name": "Mastercard Business",
+      "accountEnding": "4129",
+      "isPrimary": false
+    }
+  ]
+}

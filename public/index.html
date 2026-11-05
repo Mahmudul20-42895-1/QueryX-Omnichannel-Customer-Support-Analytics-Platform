@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QueryX - Customer Support & Operations</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for Auto Chart Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Mermaid.js for Automated Workflow Flowchart -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              900: '#78350f'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .badge-urgent { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .badge-high { background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+    .badge-medium { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+    .badge-low { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+
+    .status-open { background-color: #e0f2fe; color: #0369a1; }
+    .status-in-progress { background-color: #fef3c7; color: #b45309; }
+    .status-waiting { background-color: #ede9fe; color: #6d28d9; }
+    .status-resolved { background-color: #dcfce7; color: #15803d; }
+    .status-closed { background-color: #f1f5f9; color: #475569; }
+
+    .channel-telegram { color: #0284c7; background: #e0f2fe; }
+    .channel-messenger { color: #2563eb; background: #dbeafe; }
+    .channel-instagram { color: #c026d3; background: #fae8ff; }
+    .channel-email { color: #ea580c; background: #ffedd5; }
+    .channel-portal { color: #475569; background: #f1f5f9; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased h-screen overflow-hidden flex flex-col">
+
+  <!-- ======================== VIEW A: CLEAN PROFESSIONAL LOGIN SCREEN (NO ICONS / NO EMOJIS IN ROLE SELECTORS) ======================== -->
+  <div id="authScreen" class="fixed inset-0 z-50 bg-[#0B1120] flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800/80 rounded-2xl p-8 shadow-2xl relative">
+      <!-- Glow effect -->
+      <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Header & Brand -->
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-slate-950 text-xl shadow-lg shadow-amber-500/20">
+          Q
+        </div>
+        <div>
+          <div class="text-xl font-extrabold text-white flex items-center gap-1.5">
+            Query<span class="text-amber-400">X</span>
+            <span class="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded font-mono font-semibold">UK Operations</span>
+          </div>
+          <span class="text-xs text-slate-400">Support & Business Analytics Suite</span>
+        </div>
+      </div>
+
+      <div class="border-b border-slate-800 pb-4 mb-5">
+        <h2 class="text-sm font-semibold text-white">System Authentication</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Select your authorized account role to access operations console</p>
+      </div>
+
+      <!-- Pure Text Role Selectors (Completely Clean - No icons, No emojis) -->
+      <div class="mb-5">
+        <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Account Role</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="roleSelectAdminBtn" onclick="selectRolePreset('admin')" class="py-2.5 px-3 text-xs font-semibold rounded-lg border border-amber-400/40 bg-amber-500/10 text-white transition text-center">
+            Administrator
+          </button>
+          <button type="button" id="roleSelectAgentBtn" onclick="selectRolePreset('agent')" class="py-2.5 px-3 text-xs font-semibold rounded-lg border border-slate-800 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition text-center">
+            Support Agent
+          </button>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Corporate Email</label>
+          <input id="loginEmail" type="email" required class="w-full px-3 py-2 text-xs bg-slate-800/90 border border-slate-700/80 rounded-lg text-white placeholder-slate-500 outline-none focus:border-amber-400 transition" value="admin@queryx.io" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
+          <input id="loginPassword" type="password" required class="w-full px-3 py-2 text-xs bg-slate-800/90 border border-slate-700/80 rounded-lg text-white placeholder-slate-500 outline-none focus:border-amber-400 transition" value="admin" />
+        </div>
+
+        <div id="loginErrorMsg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg"></div>
+
+        <button type="submit" class="w-full py-2.5 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-lg transition shadow-md shadow-amber-400/20 flex items-center justify-center gap-2">
+          <span>Sign In to Dashboard</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
+        <span>QueryX UK Enterprise v2.5</span>
+        <span class="flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Encrypted Terminal</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================== VIEW B: MAIN APPLICATION WORKSPACE ======================== -->
+  <div id="appWorkspace" class="flex-1 flex overflow-hidden hidden">
+
+    <!-- SINGLE CLEAN SIDEBAR (Only Admin & Agent Roles) -->
+    <aside class="w-16 md:w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 select-none z-30 transition-all">
+      <!-- Logo Header -->
+      <div class="h-16 flex items-center px-4 gap-3 border-b border-slate-800 bg-[#0B1120]">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center font-bold text-slate-950 text-xl shadow-lg shadow-amber-500/20">
+          Q
+        </div>
+        <div class="hidden md:flex flex-col">
+          <div class="font-extrabold tracking-wide text-lg text-white flex items-center gap-1.5">
+            Query<span class="text-amber-400">X</span>
+            <span class="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono font-semibold">UK</span>
+          </div>
+          <span class="text-[11px] text-slate-400">Operations Console</span>
+        </div>
+      </div>
+
+      <!-- Active User Profile Indicator -->
+      <div class="p-3 border-b border-slate-800 bg-slate-950/40 hidden md:block">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Account Role</span>
+          <span id="sidebarRolePill" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            Admin
+          </span>
+        </div>
+        <div class="mt-1 text-xs font-semibold text-white truncate" id="sidebarUserName">Admin Director</div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 py-3 px-2 space-y-1 overflow-y-auto custom-scroll">
+        <!-- 1. Tickets & Queue -->
+        <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-white bg-slate-800/90 shadow-sm transition">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400"></i>
+          <span class="hidden md:inline">Tickets & Queue</span>
+          <span id="badgeTicketCount" class="ml-auto text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full hidden md:inline">0</span>
+        </button>
+
+        <!-- 2. Omnichannel Inbox -->
+        <button onclick="switchView('omnichannel')" id="nav-omnichannel" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+          <i data-lucide="messages-square" class="w-4 h-4 text-sky-400"></i>
+          <span class="hidden md:inline">Omnichannel Inbox</span>
+          <span class="ml-auto flex h-2 w-2 relative hidden md:flex">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+          </span>
+        </button>
+
+        <!-- 3. Main Board (Renamed from Kanban Board) -->
+        <button onclick="switchView('kanban')" id="nav-kanban" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+          <i data-lucide="kanban" class="w-4 h-4 text-blue-400"></i>
+          <span class="hidden md:inline">Main Board</span>
+        </button>
+
+        <!-- 4. SLA & Analytics -->
+        <button onclick="switchView('analytics')" id="nav-analytics" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+          <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden md:inline">SLA & Analytics</span>
+          <span class="ml-auto text-[9px] bg-emerald-500/20 text-emerald-300 font-semibold px-1.5 py-0.5 rounded hidden md:inline">Export</span>
+        </button>
+
+        <!-- 5. Business Analyzes (Ticket Trends Line Chart + Hourly Growth + Channel Analytics) -->
+        <button onclick="switchView('business-analyzes')" id="nav-business-analyzes" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+          <i data-lucide="trending-up" class="w-4 h-4 text-purple-400"></i>
+          <span class="hidden md:inline">Business Analyzes</span>
+          <span class="ml-auto text-[9px] bg-purple-500/20 text-purple-300 font-bold px-1.5 py-0.5 rounded hidden md:inline">Automata</span>
+        </button>
+
+        <!-- 6. Process Flowchart (Dedicated Tab: How the Business Analytics work, auto-generated by reports, billing & systems) -->
+        <button onclick="switchView('process-flowchart')" id="nav-process-flowchart" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+          <i data-lucide="git-merge" class="w-4 h-4 text-indigo-400"></i>
+          <span class="hidden md:inline">Process Flowchart</span>
+          <span class="ml-auto text-[9px] bg-indigo-500/20 text-indigo-300 font-bold px-1.5 py-0.5 rounded hidden md:inline">System</span>
+        </button>
+
+        <!-- ADMIN EXCLUSIVE SECTION -->
+        <div id="adminNavGroup" class="pt-3 mt-3 border-t border-slate-800">
+          <div class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase hidden md:block">Administration</div>
+          
+          <!-- Team / Agents Management (Admin Can Add New Agent/Employee) -->
+          <button onclick="switchView('agents')" id="nav-agents" class="mt-1 w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+            <i data-lucide="users" class="w-4 h-4 text-cyan-400"></i>
+            <span class="hidden md:inline">Team & Agents</span>
+            <span class="ml-auto text-[9px] bg-cyan-500/20 text-cyan-300 font-bold px-1.5 py-0.5 rounded hidden md:inline">+ Add</span>
+          </button>
+
+          <!-- Dedicated Billing Section -->
+          <button onclick="switchView('billing')" id="nav-billing" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+            <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i>
+            <span class="hidden md:inline">Billing & Ledger</span>
+            <span class="ml-auto text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.5 rounded hidden md:inline">Admin</span>
+          </button>
+
+          <!-- App Integrations -->
+          <button onclick="switchView('integrations')" id="nav-integrations" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition">
+            <i data-lucide="plug-zap" class="w-4 h-4 text-amber-400"></i>
+            <span class="hidden md:inline">App Integrations</span>
+            <span class="ml-auto text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.5 rounded hidden md:inline">Admin</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Bottom Profile & Logout -->
+      <div class="p-3 border-t border-slate-800 bg-[#0B1120] flex items-center justify-between">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div id="userAvatarPill" class="w-8 h-8 rounded-full bg-amber-500 text-slate-900 font-bold flex items-center justify-center text-xs flex-shrink-0">
+            AD
+          </div>
+          <div class="hidden md:flex flex-col min-w-0">
+            <div id="footerUserName" class="text-xs font-semibold text-white truncate">Admin Director</div>
+            <div id="footerUserEmail" class="text-[10px] text-slate-400 truncate">admin@queryx.io</div>
+          </div>
+        </div>
+        <button onclick="logoutUser()" title="Sign Out" class="text-slate-400 hover:text-rose-400 transition p-1.5 rounded-lg hover:bg-slate-800">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN RIGHT VIEWPORT -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#F8FAFC]">
+
+      <!-- HEADER TOP BAR -->
+      <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between flex-shrink-0 z-20">
+        <div class="flex items-center gap-3">
+          <div class="text-xs text-slate-400 hidden sm:flex items-center gap-1.5">
+            <span>QueryX</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <span class="font-semibold text-slate-700" id="headerBreadcrumb">Tickets & Queue</span>
+          </div>
+          <div class="h-4 w-[1px] bg-slate-200 hidden sm:block"></div>
+          <!-- Global Search -->
+          <div class="relative w-64 md:w-80">
+            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input id="searchInput" oninput="handleSearch(this.value)" type="text" placeholder="Search ticket ID, subject, customer..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-100 focus:bg-white border border-transparent focus:border-amber-400 rounded-lg outline-none transition" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="wsStatusText">App Gateways Active</span>
+          </div>
+
+          <div class="hidden md:flex items-center gap-1.5 text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
+            <i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>Auto-Routing to Agents</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEW PANELS CONTAINER -->
+      <div class="flex-1 overflow-y-auto custom-scroll p-6">
+
+        <!-- ==================== 1. TICKETS & QUEUE VIEW ==================== -->
+        <section id="view-dashboard" class="space-y-6">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                <span class="flex items-center gap-1.5"><i data-lucide="ticket" class="w-4 h-4 text-slate-400"></i> TOTAL TICKETS</span>
+                <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Auto Ingestion</span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="metricTotal" class="text-2xl font-bold text-slate-900">0</span>
+                <span class="text-xs text-slate-400">From Integrations</span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4 text-blue-500"></i> OPEN QUEUE</span>
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="metricOpen" class="text-2xl font-bold text-slate-900">0</span>
+                <span class="text-xs text-blue-600 font-medium">Needs Agent</span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                <span class="flex items-center gap-1.5"><i data-lucide="hourglass" class="w-4 h-4 text-amber-500"></i> IN PROGRESS</span>
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="metricPending" class="text-2xl font-bold text-slate-900">0</span>
+                <span class="text-xs text-amber-600 font-medium">Under Investigation</span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                <span class="flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i> RESOLVED / CLOSED</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="metricResolved" class="text-2xl font-bold text-slate-900">0</span>
+                <span class="text-xs text-emerald-600 font-medium">Solved</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+              <button onclick="filterStatus('All')" id="tabAll" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white shadow-sm">
+                All (<span id="countAll">0</span>)
+              </button>
+              <button onclick="filterStatus('Open')" id="tabOpen" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">Open</button>
+              <button onclick="filterStatus('In Progress')" id="tabInProgress" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">In Progress</button>
+              <button onclick="filterStatus('Waiting for Customer')" id="tabWaitingforCustomer" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">Waiting for Customer</button>
+              <button onclick="filterStatus('Resolved')" id="tabResolved" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">Resolved</button>
+              <button onclick="filterStatus('Closed')" id="tabClosed" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">Closed</button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <select id="filterPlatformSelect" onchange="renderTicketTable()" class="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-700 outline-none">
+                <option value="All">All Channels</option>
+                <option value="Telegram">Telegram</option>
+                <option value="Messenger">Facebook Messenger</option>
+                <option value="Instagram">Instagram Direct</option>
+                <option value="Email">Email</option>
+              </select>
+
+              <select id="filterPrioritySelect" onchange="renderTicketTable()" class="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-700 outline-none">
+                <option value="All">All Priorities</option>
+                <option value="Urgent">Urgent</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+
+              <button onclick="resetFilters()" class="text-xs text-amber-600 hover:text-amber-700 font-semibold px-2 py-1">Reset</button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px]">
+                    <th class="py-3 px-4">Ticket ID</th>
+                    <th class="py-3 px-4">Subject & Complaint</th>
+                    <th class="py-3 px-3">Channel / Source</th>
+                    <th class="py-3 px-3">Status</th>
+                    <th class="py-3 px-3">Priority</th>
+                    <th class="py-3 px-3">Assignee</th>
+                    <th class="py-3 px-3">Customer</th>
+                    <th class="py-3 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+              </table>
+            </div>
+            <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+              <span id="tablePaginationInfo">Showing 0 tickets</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 2. OMNICHANNEL INBOX ==================== -->
+        <section id="view-omnichannel" class="hidden h-full flex flex-col space-y-4">
+          <div class="flex items-center justify-between flex-shrink-0">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="messages-square" class="w-5 h-5 text-sky-500"></i> Centralized Omnichannel Inbox
+              </h2>
+              <p class="text-xs text-slate-500">Incoming inquiries from Telegram, Facebook, Instagram & Email directly connected to agent desk</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="openSimulationModal()" class="px-3 py-1.5 text-xs font-semibold bg-sky-50 border border-sky-200 text-sky-700 hover:bg-sky-100 rounded-lg flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i> Test Incoming Inbound Query
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm flex-1 flex overflow-hidden min-h-[580px]">
+            <div class="w-80 border-r border-slate-200 flex flex-col bg-slate-50/50 flex-shrink-0">
+              <div class="p-3 border-b border-slate-200 bg-white">
+                <div class="relative">
+                  <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                  <input id="inboxFilterSearch" oninput="renderOmnichannelList()" type="text" placeholder="Filter conversations..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-100 rounded-lg outline-none focus:bg-white focus:border-amber-400 border border-transparent" />
+                </div>
+              </div>
+
+              <div class="px-3 py-2 flex items-center gap-1 overflow-x-auto border-b border-slate-200 bg-white text-[11px]">
+                <button onclick="filterInboxChannel('All')" class="px-2 py-0.5 rounded font-semibold bg-slate-900 text-white" id="inboxTabAll">All</button>
+                <button onclick="filterInboxChannel('Telegram')" class="px-2 py-0.5 rounded font-medium text-slate-600 hover:bg-slate-100" id="inboxTabTelegram">Telegram</button>
+                <button onclick="filterInboxChannel('Messenger')" class="px-2 py-0.5 rounded font-medium text-slate-600 hover:bg-slate-100" id="inboxTabMessenger">Messenger</button>
+                <button onclick="filterInboxChannel('Instagram')" class="px-2 py-0.5 rounded font-medium text-slate-600 hover:bg-slate-100" id="inboxTabInstagram">Instagram</button>
+                <button onclick="filterInboxChannel('Email')" class="px-2 py-0.5 rounded font-medium text-slate-600 hover:bg-slate-100" id="inboxTabEmail">Email</button>
+              </div>
+
+              <div id="omnichannelThreadsList" class="flex-1 overflow-y-auto custom-scroll divide-y divide-slate-100"></div>
+            </div>
+
+            <div id="omnichannelChatWindow" class="flex-1 flex flex-col bg-white">
+              <div class="flex-1 flex items-center justify-center text-center p-8 text-slate-400">
+                <div>
+                  <i data-lucide="message-square" class="w-12 h-12 mx-auto mb-3 text-slate-300"></i>
+                  <p class="text-sm font-semibold text-slate-600">Select an omnichannel conversation to read and reply</p>
+                  <p class="text-xs text-slate-400 mt-1">Replies automatically route back to customer's connected app</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 3. MAIN BOARD VIEW (RENAMED FROM KANBAN BOARD) ==================== -->
+        <section id="view-kanban" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-800">Support Main Board</h2>
+              <p class="text-xs text-slate-500">Tickets generated from external apps organized across pipeline stages</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pb-4">
+            <!-- Open -->
+            <div class="bg-slate-100 rounded-xl p-3 border border-slate-200 flex flex-col max-h-[700px]">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+                <span class="font-bold text-xs text-slate-700 uppercase flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Open
+                </span>
+                <span id="kanbanOpenCount" class="text-xs font-semibold bg-white px-2 py-0.5 rounded-full text-slate-600 shadow-sm">0</span>
+              </div>
+              <div id="kanbanColOpen" class="space-y-3 overflow-y-auto custom-scroll flex-1 p-1"></div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="bg-slate-100 rounded-xl p-3 border border-slate-200 flex flex-col max-h-[700px]">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+                <span class="font-bold text-xs text-slate-700 uppercase flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> In Progress
+                </span>
+                <span id="kanbanInProgressCount" class="text-xs font-semibold bg-white px-2 py-0.5 rounded-full text-slate-600 shadow-sm">0</span>
+              </div>
+              <div id="kanbanColInProgress" class="space-y-3 overflow-y-auto custom-scroll flex-1 p-1"></div>
+            </div>
+
+            <!-- Waiting -->
+            <div class="bg-slate-100 rounded-xl p-3 border border-slate-200 flex flex-col max-h-[700px]">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+                <span class="font-bold text-xs text-slate-700 uppercase flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Waiting
+                </span>
+                <span id="kanbanWaitingCount" class="text-xs font-semibold bg-white px-2 py-0.5 rounded-full text-slate-600 shadow-sm">0</span>
+              </div>
+              <div id="kanbanColWaiting" class="space-y-3 overflow-y-auto custom-scroll flex-1 p-1"></div>
+            </div>
+
+            <!-- Resolved -->
+            <div class="bg-slate-100 rounded-xl p-3 border border-slate-200 flex flex-col max-h-[700px]">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+                <span class="font-bold text-xs text-slate-700 uppercase flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Resolved
+                </span>
+                <span id="kanbanResolvedCount" class="text-xs font-semibold bg-white px-2 py-0.5 rounded-full text-slate-600 shadow-sm">0</span>
+              </div>
+              <div id="kanbanColResolved" class="space-y-3 overflow-y-auto custom-scroll flex-1 p-1"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 4. SLA & ANALYTICS VIEW ==================== -->
+        <section id="view-analytics" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <i data-lucide="line-chart" class="w-5 h-5 text-emerald-500"></i> SLA & Performance Analytics
+              </h2>
+              <p class="text-xs text-slate-500">Resolution SLA compliance metrics and channel performance indicators</p>
+            </div>
+
+            <div id="slaExportAdminButtonWrapper">
+              <button onclick="exportSLACSV()" class="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm transition">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Export SLA Report (CSV)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-800 mb-4">Tickets by Priority Level</h3>
+              <div class="h-64"><canvas id="chartPriority"></canvas></div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-800 mb-4">SLA Compliance Health</h3>
+              <div class="h-64 flex items-center justify-center"><canvas id="chartSla"></canvas></div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-800 mb-4">Channel Origin Breakdown</h3>
+              <div class="h-64 flex items-center justify-center"><canvas id="chartChannel"></canvas></div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-800 mb-4">Agent Assigned Workload</h3>
+              <div class="h-64"><canvas id="chartAgent"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 5. BUSINESS ANALYZES VIEW (TICKET TRENDS LINE CHART + HOURLY GROWTH AREA + CHANNEL ANALYTICS BAR) ==================== -->
+        <section id="view-business-analyzes" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-5 h-5 text-purple-600"></i> Business Analyzes & Intelligence
+              </h2>
+              <p class="text-xs text-slate-500">Autonomous trend modeling, hourly business growth, and per-hour agent problem resolution metrics</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                <span class="w-2 h-2 rounded-full bg-purple-600 animate-ping"></span> Real-time Automata Active
+              </span>
+            </div>
+          </div>
+
+          <!-- Automata KPI Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <span class="text-slate-400 text-[11px] font-bold uppercase tracking-wider">Overall Problem Fixed Rate</span>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="automataFixRate" class="text-2xl font-extrabold text-emerald-600">0%</span>
+                <span class="text-xs text-slate-400">Total Solved / Volume</span>
+              </div>
+              <div class="mt-2 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div id="automataFixRateBar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <span class="text-slate-400 text-[11px] font-bold uppercase tracking-wider">Top Service Agent</span>
+              <div class="mt-2 flex items-center gap-2">
+                <div id="topAgentAvatar" class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-xs">JD</div>
+                <div>
+                  <div id="topAgentName" class="text-sm font-bold text-slate-900">Jason Duong</div>
+                  <div id="topAgentStat" class="text-[11px] text-purple-600 font-semibold">100% Fix Rate • 1.8h avg</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <span class="text-slate-400 text-[11px] font-bold uppercase tracking-wider">Customer Major Issue (Weekly)</span>
+              <div class="mt-2">
+                <span id="topMajorIssueName" class="text-base font-bold text-rose-600">Technical Config</span>
+                <div class="text-[11px] text-slate-500 mt-0.5" id="topMajorIssueSub">50% of all weekly inquiries</div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <span class="text-slate-400 text-[11px] font-bold uppercase tracking-wider">Peak Operational Volume</span>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-2xl font-extrabold text-slate-900">31/hr</span>
+                <span class="text-xs text-emerald-600 font-medium">15:00 BST</span>
+              </div>
+              <span class="text-[10px] text-slate-400">High efficiency throughput</span>
+            </div>
+          </div>
+
+          <!-- CHART 1: TICKET TRENDS (LINE CHART) & CHART 2: BUSINESS GROWTH BY HOUR (AREA / LINE CHART) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Chart A: Ticket Trends (Line Chart) -->
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-blue-500"></i> Ticket Trends (7-Day Line Chart)
+                  </h3>
+                  <p class="text-[11px] text-slate-400">Incoming inquiries vs. Successfully resolved tickets</p>
+                </div>
+                <span class="text-[10px] font-mono bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">Daily Trend</span>
+              </div>
+              <div class="h-64">
+                <canvas id="chartTicketTrends"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart B: Response Business Growth Chart By Hour (Area / Line Chart) -->
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                    <i data-lucide="activity" class="w-4 h-4 text-emerald-500"></i> Response Business Growth By Hour (Area Chart)
+                  </h3>
+                  <p class="text-[11px] text-slate-400">Hourly business customer throughput and response velocity</p>
+                </div>
+                <span class="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200">Hourly Velocity</span>
+              </div>
+              <div class="h-64">
+                <canvas id="chartHourlyGrowth"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- CHART 3: CHANNEL ANALYTICS BAR CHART PER HOUR PROBLEM SOLVE NUMBER / AGENT NAME -->
+          <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <i data-lucide="bar-chart-2" class="w-4 h-4 text-amber-500"></i> Channel Analytics: Problem Solve Rate Per Hour by Agent
+                </h3>
+                <p class="text-[11px] text-slate-400">Number of complaints resolved each hour categorized across Telegram, Email, Messenger & Instagram with assigned Agent</p>
+              </div>
+              <span class="text-[10px] font-mono bg-amber-50 text-amber-800 px-2.5 py-0.5 rounded border border-amber-200">Solved / Hour</span>
+            </div>
+
+            <!-- Bar Chart & Data Table Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-2 h-72">
+                <canvas id="chartChannelHourlyBar"></canvas>
+              </div>
+
+              <!-- Hourly Solved Ledger -->
+              <div class="border border-slate-100 rounded-xl p-3 bg-slate-50 overflow-y-auto max-h-72 custom-scroll space-y-2">
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Hourly Solved Log</div>
+                <div id="channelHourlyLogList" class="space-y-2 text-xs">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Major Issues & Agent Performance Ranking -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h3 class="text-sm font-bold text-slate-900">Customer Major Issues (Weekly Breakdown)</h3>
+                <span class="text-[10px] font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">Root Cause</span>
+              </div>
+              <div id="majorIssuesContainer" class="space-y-2.5"></div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h3 class="text-sm font-bold text-slate-900">Top Service Agents (Fixed Rate Leaderboard)</h3>
+                <span class="text-[10px] font-mono bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200">Efficiency</span>
+              </div>
+              <div id="agentPerformanceContainer" class="space-y-2.5"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 6. DEDICATED PROCESS FLOWCHART TAB (HOW BUSINESS ANALYTICS WORKS) ==================== -->
+        <section id="view-process-flowchart" class="hidden space-y-6">
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i data-lucide="git-merge" class="w-5 h-5 text-indigo-600"></i> Automated Business Analytics & Systems Architecture Flowchart
+                </h2>
+                <p class="text-xs text-slate-500">Autonomous workflow mapping: How the Business Analytics engine auto-generates reports from live Billing, Inbound Channel streams, and System SLA metrics</p>
+              </div>
+              <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full">
+                Auto-Generated Diagram
+              </span>
+            </div>
+
+            <!-- Mermaid Workflow Architecture Card -->
+            <div class="p-8 bg-[#0B1120] rounded-xl overflow-x-auto flex justify-center text-white border border-slate-800">
+              <div id="automataMermaidContainer" class="w-full flex justify-center">
+                <!-- Mermaid rendered dynamically by reports & billing data -->
+              </div>
+            </div>
+
+            <!-- Systems Explanatory Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs">
+              <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span> 1. Inbound Stream Ingestion
+                </div>
+                <p class="text-slate-500 text-[11px] leading-relaxed">External customer complaints from Telegram, Facebook, Instagram, and Email webhooks are parsed automatically without manual data entry.</p>
+              </div>
+
+              <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-purple-500"></span> 2. Automata Analytics Engine
+                </div>
+                <p class="text-slate-500 text-[11px] leading-relaxed">Computes Problem Fixed Rates, hourly growth response curves, and categorizes Customer Major Issues dynamically every 60 seconds.</p>
+              </div>
+
+              <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 3. Billing & SLA Verification
+                </div>
+                <p class="text-slate-500 text-[11px] leading-relaxed">Automatically synchronizes operational resolution hours with enterprise contract SLAs and UK Direct Debit ledger receipts.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 7. TEAM & AGENTS (ADMIN CAN ADD NEW AGENT / EMPLOYEE) ==================== -->
+        <section id="view-agents" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="users" class="w-5 h-5 text-cyan-600"></i> Team & Employee Management
+              </h2>
+              <p class="text-xs text-slate-500">View team members, support specialists and onboard new agents or employees</p>
+            </div>
+
+            <button onclick="openAddAgentModal()" class="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm transition">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>Add New Agent</span>
+            </button>
+          </div>
+
+          <!-- Agents Roster Table -->
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Active Support Personnel & Employees</h3>
+                <p class="text-[11px] text-slate-400">Assigned support roles and security access tiers</p>
+              </div>
+              <span id="agentsCountBadge" class="text-xs font-mono font-bold bg-slate-100 px-2.5 py-1 rounded text-slate-700">3 Personnel</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px]">
+                    <th class="py-3 px-4">Employee / Agent</th>
+                    <th class="py-3 px-4">Role Tier</th>
+                    <th class="py-3 px-4">Department</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4">Joined Date</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="agentsTableBody" class="divide-y divide-slate-100 text-slate-700">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 8. BILLING & SUBSCRIPTION LEDGER (ADMIN ONLY) ==================== -->
+        <section id="view-billing" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-5 h-5 text-emerald-600"></i> Billing, Subscriptions & Invoices
+              </h2>
+              <p class="text-xs text-slate-500">Manage company enterprise subscription, invoices, payment history and financial ledger</p>
+            </div>
+
+            <button onclick="exportBillingCSV()" class="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm transition">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Export Billing Ledger (CSV)</span>
+            </button>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 id="planNameDisplay" class="text-lg font-extrabold text-slate-900">Enterprise Tier UK</h3>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Unlimited Omnichannel routing, 25 support seats, SLA guarantee & Automata Analytics</p>
+              </div>
+
+              <div class="text-right">
+                <div class="text-2xl font-extrabold text-slate-900">£1,250<span class="text-xs font-medium text-slate-500"> / month</span></div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Renews automatically on Jan 15, 2027</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 text-xs">
+              <div>
+                <span class="text-slate-400 block mb-1">Seats Allocated</span>
+                <span id="billingSeatsText" class="font-bold text-slate-900 text-sm">18 of 25 Agents Active</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block mb-1">Connected App Channels</span>
+                <span class="font-bold text-slate-900 text-sm">4 Platforms (TG, FB, IG, Email)</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block mb-1">Billing Cycle</span>
+                <span class="font-bold text-slate-900 text-sm">Annual (Direct Debit UK)</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block mb-1">Contract SLA Compliance</span>
+                <span class="font-bold text-emerald-600 text-sm">99.4% On-Track</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100">
+              <h3 class="text-sm font-bold text-slate-900">Payment History & Invoices</h3>
+              <p class="text-[11px] text-slate-500">Past statement receipts and settlement proofs</p>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px]">
+                    <th class="py-3 px-4">Invoice #</th>
+                    <th class="py-3 px-4">Billing Date</th>
+                    <th class="py-3 px-4">Due Date</th>
+                    <th class="py-3 px-4">Amount</th>
+                    <th class="py-3 px-4">Payment Method</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 text-right">Receipt</th>
+                  </tr>
+                </thead>
+                <tbody id="billingInvoicesTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== 9. APP INTEGRATIONS SETTINGS (ADMIN ONLY) ==================== -->
+        <section id="view-integrations" class="hidden space-y-6">
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center font-bold flex-shrink-0">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-amber-900">Admin Console: App Integrations & Automated Ticket Creation</h2>
+              <p class="text-xs text-amber-800 mt-0.5">When customers message via Telegram, Messenger, Instagram, or Email, the system automatically parses and generates a ticket directly assigned to your agents.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Telegram -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Telegram Bot Integration</h3>
+                    <p class="text-xs text-slate-500">Auto-creates ticket for any inbound chat</p>
+                  </div>
+                </div>
+                <span id="tgStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800">Connected</span>
+              </div>
+              <div class="space-y-3 pt-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Bot Token (from @BotFather)</label>
+                  <input id="tgBotToken" type="password" placeholder="71928372:AAFlkjasdf..." class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400 bg-slate-50" />
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                  <span>Username: <strong id="tgBotUsernameDisplay" class="text-slate-800">@QueryX_Support_Bot</strong></span>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="tgEnabledCheckbox" checked class="rounded text-amber-500 focus:ring-amber-400" />
+                    <span class="font-semibold text-slate-700">Enable Bot</span>
+                  </label>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">Live Webhook / Polling Active</span>
+                <button onclick="saveTelegramIntegration()" class="px-4 py-1.5 text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-lg shadow-sm">
+                  Save & Connect
+                </button>
+              </div>
+            </div>
+
+            <!-- Facebook Messenger -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Facebook Messenger</h3>
+                    <p class="text-xs text-slate-500">Inbound Facebook page message auto-routing</p>
+                  </div>
+                </div>
+                <span id="fbStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800">Connected</span>
+              </div>
+              <div class="space-y-3 pt-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Page ID</label>
+                  <input id="fbPageId" type="text" value="108291827461" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400 bg-slate-50" />
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                  <span>Verify Token: <code class="text-slate-800">queryx_verify_token_2026</code></span>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="fbEnabledCheckbox" checked class="rounded text-amber-500 focus:ring-amber-400" />
+                    <span class="font-semibold text-slate-700">Enable Messenger</span>
+                  </label>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">Webhook: /api/webhooks/meta</span>
+                <button onclick="saveMessengerIntegration()" class="px-4 py-1.5 text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-lg shadow-sm">
+                  Save & Connect
+                </button>
+              </div>
+            </div>
+
+            <!-- Instagram Direct -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center font-bold">
+                    <i data-lucide="instagram" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Instagram Direct</h3>
+                    <p class="text-xs text-slate-500">Syncs Instagram business account DMs</p>
+                  </div>
+                </div>
+                <span id="igStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800">Connected</span>
+              </div>
+              <div class="space-y-3 pt-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Business Account ID</label>
+                  <input id="igAccountId" type="text" value="17841400291" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none bg-slate-50" />
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                  <label class="flex items-center gap-2 cursor-pointer ml-auto">
+                    <input type="checkbox" id="igEnabledCheckbox" checked class="rounded text-amber-500 focus:ring-amber-400" />
+                    <span class="font-semibold text-slate-700">Enable Instagram</span>
+                  </label>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">Meta Graph Webhook Ready</span>
+                <button onclick="saveInstagramIntegration()" class="px-4 py-1.5 text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-lg shadow-sm">
+                  Save & Connect
+                </button>
+              </div>
+            </div>
+
+            <!-- Email Gateway -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-bold">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Email Gateway (SMTP / IMAP)</h3>
+                    <p class="text-xs text-slate-500">Inbound emails parse into actionable tickets</p>
+                  </div>
+                </div>
+                <span id="emStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800">Connected</span>
+              </div>
+              <div class="space-y-3 pt-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Support Inbound Address</label>
+                  <input id="emSmtpUser" type="text" value="support@queryx.io" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none bg-slate-50" />
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                  <label class="flex items-center gap-2 cursor-pointer ml-auto">
+                    <input type="checkbox" id="emEnabledCheckbox" checked class="rounded text-amber-500 focus:ring-amber-400" />
+                    <span class="font-semibold text-slate-700">Enable Email Routing</span>
+                  </label>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">Webhook: /api/webhooks/email</span>
+                <button onclick="saveEmailIntegration()" class="px-4 py-1.5 text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-lg shadow-sm">
+                  Save & Connect
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ======================== MODAL: ADD NEW AGENT / EMPLOYEE (ADMIN ONLY) ======================== -->
+  <div id="addAgentModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-bold text-slate-900 text-sm">Add New Support Agent / Employee</h3>
+          <p class="text-[11px] text-slate-500">Provision login access and department queue routing</p>
+        </div>
+        <button onclick="closeAddAgentModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCreateAgentSubmit(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+          <input id="newAgentName" type="text" required placeholder="e.g. Alex Morgan" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Corporate Email Address *</label>
+          <input id="newAgentEmail" type="email" required placeholder="alex.m@queryx.io" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Role Tier</label>
+            <select id="newAgentRole" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg bg-slate-50 outline-none">
+              <option value="Agent">Support Agent</option>
+              <option value="Admin">Administrator</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Department</label>
+            <select id="newAgentDept" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg bg-slate-50 outline-none">
+              <option value="Customer Support">Customer Support</option>
+              <option value="Technical Escalations">Technical Escalations</option>
+              <option value="Billing & Finance">Billing & Finance</option>
+              <option value="Operations">Operations</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Temporary Password</label>
+          <input id="newAgentPassword" type="password" placeholder="Defaults to agent123" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400" />
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeAddAgentModal()" class="px-4 py-2 text-xs font-medium text-slate-600">Cancel</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold bg-amber-400 text-slate-900 rounded-lg shadow-sm">
+            Save & Provision
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ======================== MODAL: TICKET DETAIL & REPLY DRAWER ======================== -->
+  <div id="ticketDetailModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-end">
+    <div class="w-full max-w-4xl h-full bg-white shadow-2xl flex flex-col overflow-hidden animate-slide-left">
+      <div class="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-3">
+          <span id="detailTicketId" class="text-sm font-mono font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">QX-1001</span>
+          <span id="detailChannelBadge" class="text-xs px-2.5 py-1 rounded-full font-semibold channel-telegram">Telegram</span>
+          <span id="detailStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-semibold status-open">Open</span>
+          <span id="detailPriorityBadge" class="text-xs px-2.5 py-1 rounded-full font-semibold badge-high">High</span>
+        </div>
+        <button onclick="closeTicketDetailModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <div class="flex-1 flex flex-col border-r border-slate-200 overflow-hidden bg-slate-50/50">
+          <div class="p-5 bg-white border-b border-slate-200">
+            <h2 id="detailSubject" class="text-base font-bold text-slate-900 mb-1">Subject</h2>
+            <div class="flex items-center gap-3 text-xs text-slate-500">
+              <span>Customer: <strong id="detailCustomerName">Name</strong></span>
+              <span>•</span>
+              <span id="detailCustomerEmail">email</span>
+            </div>
+          </div>
+
+          <div id="conversationThreadList" class="flex-1 overflow-y-auto p-5 space-y-4 custom-scroll"></div>
+
+          <div class="p-4 bg-white border-t border-slate-200 space-y-2">
+            <div class="flex items-center gap-2">
+              <button id="replyTypePublic" onclick="setReplyType(false)" class="text-xs font-semibold px-3 py-1 rounded bg-amber-400 text-slate-900 shadow-sm">
+                Public Omnichannel Reply
+              </button>
+              <button id="replyTypeInternal" onclick="setReplyType(true)" class="text-xs font-semibold px-3 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">
+                <i data-lucide="lock" class="w-3 h-3 inline mr-1"></i> Staff Note (Internal)
+              </button>
+            </div>
+            <textarea id="replyInputText" rows="3" placeholder="Type your response to the customer... (Automatically dispatched to their connected app)" class="w-full text-xs p-3 border border-slate-200 rounded-lg outline-none focus:border-amber-400 resize-none"></textarea>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] text-slate-400">Dispatched in real-time to original source</span>
+              <button onclick="submitTicketReply()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i> Send Reply
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full md:w-72 bg-white p-5 overflow-y-auto space-y-4 flex-shrink-0">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ticket Management</span>
+          
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+            <select id="detailSelectStatus" onchange="updateTicketStatus(this.value)" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50 outline-none">
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Waiting for Customer">Waiting for Customer</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Priority</label>
+            <select id="detailSelectPriority" onchange="updateTicketPriority(this.value)" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50 outline-none">
+              <option value="Urgent">Urgent</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Assignee</label>
+            <select id="detailSelectAssignee" onchange="updateTicketAssignee(this.value)" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50 outline-none">
+              <option value="Jason Duong">Jason Duong</option>
+              <option value="Nhi Pham">Nhi Pham</option>
+              <option value="Admin Director">Admin Director</option>
+            </select>
+          </div>
+
+          <div class="pt-4 border-t border-slate-200">
+            <button onclick="quickResolveTicket()" class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 shadow-sm">
+              <i data-lucide="check-check" class="w-4 h-4"></i> Mark Resolved
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================== MODAL: OMNICHANNEL LIVE TEST TRIGGER ======================== -->
+  <div id="simulationModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-bold text-slate-900 text-sm">Test Omnichannel Auto Ticket Routing</h3>
+          <p class="text-[11px] text-slate-500">Simulates real incoming customer message from connected app</p>
+        </div>
+        <button onclick="closeSimulationModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSimulationSubmit(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Inbound Channel</label>
+          <select id="simPlatform" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg bg-slate-50 outline-none">
+            <option value="Telegram">Telegram (@User)</option>
+            <option value="Messenger">Facebook Messenger</option>
+            <option value="Instagram">Instagram Direct DM</option>
+            <option value="Email">Customer Email</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Customer Sender Name</label>
+          <input id="simSender" type="text" value="Zubair Ahmed" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Message Text</label>
+          <textarea id="simText" required rows="3" class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400 resize-none">Urgent: Our UK cloud dashboard is throwing HTTP 504 on payment webhook. Please check ASAP.</textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeSimulationModal()" class="px-4 py-2 text-xs font-medium text-slate-600">Cancel</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold bg-sky-500 hover:bg-sky-400 text-white rounded-lg shadow-sm flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Trigger Auto Ticket
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 text-xs">
+    <i data-lucide="check-circle" class="w-4 h-4 text-amber-400"></i>
+    <span id="toastMsg">Notification</span>
+  </div>
+
+
+  <!-- ======================== APPLICATION JAVASCRIPT ENGINE ======================== -->
+  <script>
+    // State
+    let currentUser = null;
+    let tickets = [];
+    let billingData = null;
+    let businessAutomataData = null;
+    let agentsList = [];
+    let activeOmnichannelTicket = null;
+    let selectedInboxChannel = 'All';
+    let currentFilterStatus = 'All';
+    let currentSearchTerm = '';
+    let isInternalNote = false;
+
+    // Charts
+    let chartPriorityInst = null;
+    let chartSlaInst = null;
+    let chartChannelInst = null;
+    let chartAgentInst = null;
+    let chartTicketTrendsInst = null;
+    let chartHourlyGrowthInst = null;
+    let chartChannelHourlyBarInst = null;
+
+    let socket = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+      const saved = localStorage.getItem('queryx_user');
+      if (saved) {
+        try {
+          currentUser = JSON.parse(saved);
+          if (currentUser.role === 'Admin' || currentUser.role === 'Agent') {
+            initWorkspace();
+          } else {
+            showLoginScreen();
+          }
+        } catch(e) {
+          showLoginScreen();
+        }
+      } else {
+        showLoginScreen();
+      }
+    });
+
+    // 1. CLEAN LOGIN LOGIC (NO EMOJIS, NO ICONS IN ROLE BUTTONS)
+    function selectRolePreset(role) {
+      const adminBtn = document.getElementById('roleSelectAdminBtn');
+      const agentBtn = document.getElementById('roleSelectAgentBtn');
+
+      if (role === 'admin') {
+        adminBtn.className = "py-2.5 px-3 text-xs font-semibold rounded-lg border border-amber-400/40 bg-amber-500/10 text-white transition text-center";
+        agentBtn.className = "py-2.5 px-3 text-xs font-semibold rounded-lg border border-slate-800 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition text-center";
+        document.getElementById('loginEmail').value = 'admin@queryx.io';
+        document.getElementById('loginPassword').value = 'admin';
+      } else {
+        agentBtn.className = "py-2.5 px-3 text-xs font-semibold rounded-lg border border-blue-400/40 bg-blue-500/10 text-white transition text-center";
+        adminBtn.className = "py-2.5 px-3 text-xs font-semibold rounded-lg border border-slate-800 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white transition text-center";
+        document.getElementById('loginEmail').value = 'agent@queryx.io';
+        document.getElementById('loginPassword').value = 'agent';
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errBox = document.getElementById('loginErrorMsg');
+      errBox.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const json = await res.json();
+        if (json.success) {
+          currentUser = json.user;
+          localStorage.setItem('queryx_user', JSON.stringify(currentUser));
+          initWorkspace();
+        } else {
+          errBox.innerText = json.message || 'Authentication failed';
+          errBox.classList.remove('hidden');
+        }
+      } catch(err) {
+        errBox.innerText = 'Network error: ' + err.message;
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    function showLoginScreen() {
+      document.getElementById('authScreen').classList.remove('hidden');
+      document.getElementById('appWorkspace').classList.add('hidden');
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('queryx_user');
+      currentUser = null;
+      if (socket) socket.close();
+      showLoginScreen();
+    }
+
+    // 2. WORKSPACE INITIALIZATION
+    function initWorkspace() {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('appWorkspace').classList.remove('hidden');
+
+      document.getElementById('sidebarUserName').innerText = currentUser.name;
+      document.getElementById('sidebarRolePill').innerText = currentUser.role;
+      document.getElementById('footerUserName').innerText = currentUser.name;
+      document.getElementById('footerUserEmail').innerText = currentUser.email;
+      document.getElementById('userAvatarPill').innerText = currentUser.avatar || 'U';
+
+      const adminNavGroup = document.getElementById('adminNavGroup');
+      const slaExportWrapper = document.getElementById('slaExportAdminButtonWrapper');
+
+      if (currentUser.role === 'Admin') {
+        adminNavGroup.classList.remove('hidden');
+        if (slaExportWrapper) slaExportWrapper.classList.remove('hidden');
+      } else {
+        adminNavGroup.classList.add('hidden');
+        if (slaExportWrapper) slaExportWrapper.classList.add('hidden');
+      }
+
+      initWebSocket();
+      fetchTickets();
+      fetchBusinessAutomata();
+      fetchAgents();
+      if (currentUser.role === 'Admin') {
+        fetchBillingData();
+        fetchIntegrations();
+      }
+
+      switchView('dashboard');
+      showNotification(`Signed in as ${currentUser.name} (${currentUser.role})`);
+    }
+
+    // 3. WEBSOCKET SYNC
+    function initWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      socket = new WebSocket(`${protocol}//${window.location.host}`);
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'NEW_OMNICHANNEL_MESSAGE') {
+            const { ticketId, message, ticket } = data.payload;
+            const idx = tickets.findIndex(t => t.id === ticketId);
+            if (idx >= 0) tickets[idx] = ticket;
+            else tickets.unshift(ticket);
+
+            updateDashboardMetrics();
+            renderTicketTable();
+            renderKanban();
+            renderOmnichannelList();
+            fetchBusinessAutomata();
+
+            if (activeOmnichannelTicket && activeOmnichannelTicket.id === ticketId) {
+              activeOmnichannelTicket = ticket;
+              renderActiveChatWindow();
+            }
+            showNotification(`Incoming query from [${ticket.platform}] ${message.author}`);
+          }
+          if (data.type === 'TICKET_UPDATED') {
+            fetchTickets();
+            fetchBusinessAutomata();
+          }
+          if (data.type === 'AGENT_ADDED') {
+            fetchAgents();
+          }
+        } catch(e) {}
+      };
+    }
+
+    // 4. API FETCHING
+    async function fetchTickets() {
+      try {
+        const res = await fetch('/api/tickets');
+        const json = await res.json();
+        if (json.success) {
+          tickets = json.data;
+          updateDashboardMetrics();
+          renderTicketTable();
+          renderKanban();
+          renderOmnichannelList();
+          renderCharts();
+        }
+      } catch (e) {}
+    }
+
+    async function fetchAgents() {
+      try {
+        const res = await fetch('/api/agents');
+        const json = await res.json();
+        if (json.success) {
+          agentsList = json.data;
+          renderAgentsTable();
+        }
+      } catch (e) {}
+    }
+
+    async function fetchBillingData() {
+      if (!currentUser || currentUser.role !== 'Admin') return;
+      try {
+        const res = await fetch('/api/billing', {
+          headers: { 'x-user-role': currentUser.role }
+        });
+        const json = await res.json();
+        if (json.success) {
+          billingData = json.data;
+          renderBillingTable();
+        }
+      } catch(e) {}
+    }
+
+    async function fetchBusinessAutomata() {
+      try {
+        const res = await fetch('/api/analytics/business-automata');
+        const json = await res.json();
+        if (json.success) {
+          businessAutomataData = json.data;
+          renderBusinessAutomataUI();
+          renderProcessFlowchart();
+        }
+      } catch(e) {}
+    }
+
+    async function fetchIntegrations() {
+      if (currentUser?.role !== 'Admin') return;
+      try {
+        const res = await fetch('/api/integrations', {
+          headers: { 'x-user-role': currentUser.role }
+        });
+        const json = await res.json();
+      } catch(e) {}
+    }
+
+    // 5. BUSINESS ANALYZES ENGINE (TICKET TRENDS LINE + HOURLY GROWTH AREA + CHANNEL ANALYTICS BAR)
+    function renderBusinessAutomataUI() {
+      if (!businessAutomataData) return;
+      const data = businessAutomataData;
+
+      document.getElementById('automataFixRate').innerText = data.fixedRatePercentage;
+      document.getElementById('automataFixRateBar').style.width = data.fixedRatePercentage;
+
+      if (data.topServiceAgent) {
+        document.getElementById('topAgentName').innerText = data.topServiceAgent.name;
+        document.getElementById('topAgentAvatar').innerText = data.topServiceAgent.avatar;
+        document.getElementById('topAgentStat').innerText = `${data.topServiceAgent.fixRate}% Fix Rate • ${data.topServiceAgent.avgSpeed}`;
+      }
+
+      if (data.weeklyMajorIssues && data.weeklyMajorIssues.length > 0) {
+        document.getElementById('topMajorIssueName').innerText = data.weeklyMajorIssues[0].issueName;
+        document.getElementById('topMajorIssueSub').innerText = `${data.weeklyMajorIssues[0].percentage}% of weekly inquiries`;
+
+        const container = document.getElementById('majorIssuesContainer');
+        container.innerHTML = data.weeklyMajorIssues.map(issue => `
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full ${issue.issueName === 'Billing' ? 'bg-amber-500' : issue.issueName === 'Technical' ? 'bg-blue-500' : 'bg-slate-400'}"></span>
+              <div>
+                <div class="font-bold text-xs text-slate-800">${issue.issueName} Complaints</div>
+                <div class="text-[10px] text-slate-400 font-mono">${issue.count} tickets • ${issue.trend}</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-extrabold text-slate-900">${issue.percentage}%</span>
+              <div class="text-[9px] uppercase font-bold ${issue.severity === 'High' ? 'text-rose-600' : 'text-slate-500'}">${issue.severity} Severity</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (data.agentPerformance) {
+        const agContainer = document.getElementById('agentPerformanceContainer');
+        agContainer.innerHTML = data.agentPerformance.map((ag, idx) => `
+          <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-400 w-4">#${idx + 1}</span>
+              <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs">${ag.avatar}</div>
+              <div>
+                <div class="font-bold text-xs text-slate-900">${ag.name}</div>
+                <div class="text-[10px] text-slate-400">${ag.resolved} of ${ag.assigned} resolved</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-bold text-emerald-600">${ag.fixRate}% Fixed</span>
+              <div class="text-[10px] text-slate-400">Avg Speed: ${ag.avgSpeed}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 1. TICKET TRENDS (LINE CHART)
+      const trendCtx = document.getElementById('chartTicketTrends');
+      if (trendCtx) {
+        if (chartTicketTrendsInst) chartTicketTrendsInst.destroy();
+        chartTicketTrendsInst = new Chart(trendCtx, {
+          type: 'line',
+          data: {
+            labels: data.trendDays,
+            datasets: [
+              {
+                label: 'Inbound Inquiries',
+                data: data.incomingTrends,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2
+              },
+              {
+                label: 'Resolved by Agents',
+                data: data.resolvedTrends,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      }
+
+      // 2. RESPONSE BUSINESS GROWTH CHART BY HOUR (AREA / LINE CHART)
+      const growthCtx = document.getElementById('chartHourlyGrowth');
+      if (growthCtx) {
+        if (chartHourlyGrowthInst) chartHourlyGrowthInst.destroy();
+        chartHourlyGrowthInst = new Chart(growthCtx, {
+          type: 'line',
+          data: {
+            labels: data.hourlyLabels,
+            datasets: [
+              {
+                label: 'Inbound Customer Traffic',
+                data: data.hourlyInboundQueries,
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2.5
+              },
+              {
+                label: 'Resolved Customer Queries',
+                data: data.hourlyResolvedQueries,
+                borderColor: '#06b6d4',
+                backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      }
+
+      // 3. CHANNEL ANALYTICS BAR CHART PER HOUR PROBLEM SOLVE NUMBER / AGENT NAME
+      const chHourlyCtx = document.getElementById('chartChannelHourlyBar');
+      if (chHourlyCtx) {
+        if (chartChannelHourlyBarInst) chartChannelHourlyBarInst.destroy();
+        const labels = data.channelHourlyPerformance.map(item => `${item.hour}\n(${item.agent.split(' ')[0]})`);
+        const values = data.channelHourlyPerformance.map(item => item.solved);
+        const channelColors = data.channelHourlyPerformance.map(item => 
+          item.channel === 'Telegram' ? '#0284c7' :
+          item.channel === 'Email' ? '#ea580c' :
+          item.channel === 'Messenger' ? '#2563eb' : '#c026d3'
+        );
+
+        chartChannelHourlyBarInst = new Chart(chHourlyCtx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Solved Complaints / Hour',
+              data: values,
+              backgroundColor: channelColors,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 2 } } }
+          }
+        });
+
+        // Populate Hourly Solved Log
+        const logList = document.getElementById('channelHourlyLogList');
+        if (logList) {
+          logList.innerHTML = data.channelHourlyPerformance.map(p => `
+            <div class="p-2 bg-white border border-slate-200/80 rounded-lg flex items-center justify-between">
+              <div>
+                <span class="font-bold text-slate-800">${p.hour}</span>
+                <div class="text-[10px] text-slate-500">${p.channel} • Assigned: <strong class="text-slate-700">${p.agent}</strong></div>
+              </div>
+              <span class="px-2 py-0.5 rounded font-bold text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">+${p.solved} solved</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    // 6. PROCESS FLOWCHART RENDER (HOW BUSINESS ANALYTICS WORKS - AUTO-GENERATED)
+    function renderProcessFlowchart() {
+      if (!businessAutomataData) return;
+      const container = document.getElementById('automataMermaidContainer');
+      if (!container) return;
+
+      container.innerHTML = `<pre class="mermaid text-center" style="max-width: 100%;">${businessAutomataData.automataGeneratedMermaid}</pre>`;
+      mermaid.init();
+    }
+
+    // 7. TEAM & AGENTS (ADMIN CAN ADD NEW AGENT / EMPLOYEE)
+    function renderAgentsTable() {
+      const tbody = document.getElementById('agentsTableBody');
+      if (!tbody) return;
+
+      document.getElementById('agentsCountBadge').innerText = `${agentsList.length} Personnel`;
+      document.getElementById('billingSeatsText').innerText = `${agentsList.length} of 25 Agents Active`;
+
+      tbody.innerHTML = agentsList.map(ag => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2.5">
+              <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-800 font-bold flex items-center justify-center text-xs">${ag.avatar}</span>
+              <div>
+                <div class="font-bold text-slate-900">${ag.name}</div>
+                <div class="text-[11px] text-slate-400 font-mono">${ag.email}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold ${ag.role === 'Admin' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">
+              ${ag.role}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-slate-600">${ag.department}</td>
+          <td class="py-3 px-4"><span class="text-xs font-semibold text-emerald-600 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${ag.activeStatus}</span></td>
+          <td class="py-3 px-4 text-slate-400 font-mono">${ag.joinedDate}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="text-xs text-slate-400 font-medium">Provisioned</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddAgentModal() {
+      if (currentUser?.role !== 'Admin') {
+        showNotification('Access Denied: Only Administrator accounts can add new agents.');
+        return;
+      }
+      document.getElementById('addAgentModal').classList.remove('hidden');
+    }
+
+    function closeAddAgentModal() {
+      document.getElementById('addAgentModal').classList.add('hidden');
+    }
+
+    async function handleCreateAgentSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newAgentName').value.trim();
+      const email = document.getElementById('newAgentEmail').value.trim();
+      const roleType = document.getElementById('newAgentRole').value;
+      const department = document.getElementById('newAgentDept').value;
+      const password = document.getElementById('newAgentPassword').value.trim();
+
+      try {
+        const res = await fetch('/api/agents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-role': currentUser.role
+          },
+          body: JSON.stringify({ name, email, roleType, department, password })
+        });
+        const json = await res.json();
+        if (json.success) {
+          closeAddAgentModal();
+          e.target.reset();
+          fetchAgents();
+          showNotification(json.message);
+        } else {
+          showNotification('Error: ' + json.message);
+        }
+      } catch(err) {
+        showNotification('Failed to add employee: ' + err.message);
+      }
+    }
+
+    // 8. BILLING TABLE
+    function renderBillingTable() {
+      if (!billingData) return;
+      const tbody = document.getElementById('billingInvoicesTableBody');
+      tbody.innerHTML = billingData.invoices.map(inv => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-mono font-bold text-slate-900">${inv.invoiceId}</td>
+          <td class="py-3 px-4">${inv.date}</td>
+          <td class="py-3 px-4 text-slate-500">${inv.dueDate}</td>
+          <td class="py-3 px-4 font-bold text-slate-900">${inv.amount}</td>
+          <td class="py-3 px-4 text-slate-600">${inv.paymentMethod}</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800">${inv.status}</span></td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="showNotification('Downloading Invoice receipt ${inv.invoiceId}...')" class="text-xs font-semibold text-amber-600 hover:underline">Download PDF</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function exportSLACSV() {
+      if (currentUser?.role !== 'Admin') return;
+      const res = await fetch('/api/sla/export', { method: 'POST', headers: { 'x-user-role': currentUser.role } });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `QueryX_SLA_Executive_Report_${Date.now()}.csv`;
+      a.click();
+      showNotification('SLA Report exported successfully.');
+    }
+
+    async function exportBillingCSV() {
+      if (currentUser?.role !== 'Admin') return;
+      const res = await fetch('/api/billing/invoices/export', { method: 'POST', headers: { 'x-user-role': currentUser.role } });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `QueryX_Billing_Ledger_${Date.now()}.csv`;
+      a.click();
+      showNotification('Billing Ledger CSV exported successfully.');
+    }
+
+    // 9. NAVIGATION VIEWS
+    function switchView(viewName) {
+      if ((viewName === 'billing' || viewName === 'integrations' || viewName === 'agents') && currentUser?.role !== 'Admin') {
+        showNotification('Access Denied: Only Administrator accounts can access this section.');
+        return;
+      }
+
+      const views = ['dashboard', 'omnichannel', 'kanban', 'analytics', 'business-analyzes', 'process-flowchart', 'agents', 'billing', 'integrations'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        const nav = document.getElementById(`nav-${v}`);
+        if (el) el.classList.add('hidden');
+        if (nav) nav.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition";
+      });
+
+      const activeEl = document.getElementById(`view-${viewName}`);
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+      if (activeNav) activeNav.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium text-white bg-slate-800/90 shadow-sm transition";
+
+      document.getElementById('headerBreadcrumb').innerText = 
+        viewName === 'dashboard' ? 'Tickets & Queue' :
+        viewName === 'omnichannel' ? 'Omnichannel Inbox' :
+        viewName === 'kanban' ? 'Main Board' :
+        viewName === 'analytics' ? 'SLA & Analytics' :
+        viewName === 'business-analyzes' ? 'Business Analyzes' :
+        viewName === 'process-flowchart' ? 'Process Flowchart' :
+        viewName === 'agents' ? 'Team & Agents' :
+        viewName === 'billing' ? 'Billing & Subscriptions' : 'App Integrations';
+
+      if (viewName === 'analytics') renderCharts();
+      if (viewName === 'business-analyzes') fetchBusinessAutomata();
+      if (viewName === 'process-flowchart') renderProcessFlowchart();
+      if (viewName === 'agents') fetchAgents();
+      if (viewName === 'omnichannel') renderOmnichannelList();
+      if (viewName === 'billing') fetchBillingData();
+    }
+
+    // 10. TICKETS & TABLE RENDERING
+    function updateDashboardMetrics() {
+      const total = tickets.length;
+      const open = tickets.filter(t => t.status === 'Open').length;
+      const pending = tickets.filter(t => t.status === 'In Progress' || t.status === 'Waiting for Customer').length;
+      const resolved = tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed').length;
+
+      document.getElementById('metricTotal').innerText = total;
+      document.getElementById('metricOpen').innerText = open;
+      document.getElementById('metricPending').innerText = pending;
+      document.getElementById('metricResolved').innerText = resolved;
+      document.getElementById('badgeTicketCount').innerText = open;
+      document.getElementById('countAll').innerText = total;
+    }
+
+    function renderTicketTable() {
+      const tbody = document.getElementById('ticketsTableBody');
+      const priorityFilter = document.getElementById('filterPrioritySelect').value;
+      const platformFilter = document.getElementById('filterPlatformSelect').value;
+
+      let filtered = tickets.filter(t => {
+        if (currentFilterStatus !== 'All' && t.status !== currentFilterStatus) return false;
+        if (priorityFilter !== 'All' && t.priority !== priorityFilter) return false;
+        if (platformFilter !== 'All' && (t.platform !== platformFilter && t.channel !== platformFilter)) return false;
+        if (currentSearchTerm) {
+          const matchId = t.id.toLowerCase().includes(currentSearchTerm);
+          const matchSub = t.subject.toLowerCase().includes(currentSearchTerm);
+          const matchDesc = t.description.toLowerCase().includes(currentSearchTerm);
+          if (!matchId && !matchSub && !matchDesc) return false;
+        }
+        return true;
+      });
+
+      document.getElementById('tablePaginationInfo').innerText = `Showing ${filtered.length} of ${tickets.length} tickets`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-400">No tickets matching filter</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(t => {
+        const priorityBadge = 
+          t.priority === 'Urgent' ? 'badge-urgent' :
+          t.priority === 'High' ? 'badge-high' :
+          t.priority === 'Medium' ? 'badge-medium' : 'badge-low';
+
+        const statusClass = 
+          t.status === 'Open' ? 'status-open' :
+          t.status === 'In Progress' ? 'status-in-progress' :
+          t.status === 'Waiting for Customer' ? 'status-waiting' :
+          t.status === 'Resolved' ? 'status-resolved' : 'status-closed';
+
+        const channelClass = 
+          t.platform === 'Telegram' ? 'channel-telegram' :
+          t.platform === 'Messenger' ? 'channel-messenger' :
+          t.platform === 'Instagram' ? 'channel-instagram' :
+          t.platform === 'Email' ? 'channel-email' : 'channel-portal';
+
+        return `
+          <tr class="hover:bg-slate-50 transition cursor-pointer group" onclick="openTicketDetailModal('${t.id}')">
+            <td class="py-3 px-4 font-mono font-bold text-slate-900">${t.id}</td>
+            <td class="py-3 px-4 max-w-xs md:max-w-md">
+              <div class="font-semibold text-slate-900 group-hover:text-amber-700 transition line-clamp-1">${t.subject}</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">${t.description}</div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold ${channelClass}">
+                ${t.platform || t.channel}
+              </span>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusClass}">${t.status}</span>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold ${priorityBadge}">${t.priority}</span>
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-[10px]">
+                  ${t.assignee?.avatar || '?'}
+                </span>
+                <span class="text-[11px] text-slate-700">${t.assignee?.name || 'Unassigned'}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-[11px] text-slate-600">${t.customer?.name || 'Customer'}</td>
+            <td class="py-3 px-3 text-right" onclick="event.stopPropagation()">
+              <button onclick="openTicketDetailModal('${t.id}')" class="px-2.5 py-1 text-[11px] font-semibold bg-white border border-slate-200 hover:bg-slate-100 rounded text-slate-700 shadow-sm">
+                View & Reply
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function filterStatus(status) {
+      currentFilterStatus = status;
+      ['All', 'Open', 'InProgress', 'WaitingforCustomer', 'Resolved', 'Closed'].forEach(s => {
+        const tab = document.getElementById('tab' + s);
+        if (tab) {
+          if (s.replace('InProgress', 'In Progress').replace('WaitingforCustomer', 'Waiting for Customer') === status || (s === 'All' && status === 'All')) {
+            tab.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white shadow-sm";
+          } else {
+            tab.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700";
+          }
+        }
+      });
+      renderTicketTable();
+    }
+
+    function handleSearch(val) {
+      currentSearchTerm = val.toLowerCase().trim();
+      renderTicketTable();
+    }
+
+    function resetFilters() {
+      currentFilterStatus = 'All';
+      currentSearchTerm = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterPrioritySelect').value = 'All';
+      document.getElementById('filterPlatformSelect').value = 'All';
+      filterStatus('All');
+    }
+
+    // 11. OMNICHANNEL INBOX
+    function filterInboxChannel(channel) {
+      selectedInboxChannel = channel;
+      ['All', 'Telegram', 'Messenger', 'Instagram', 'Email'].forEach(c => {
+        const btn = document.getElementById('inboxTab' + c);
+        if (btn) {
+          if (c === channel) btn.className = "px-2 py-0.5 rounded font-semibold bg-slate-900 text-white";
+          else btn.className = "px-2 py-0.5 rounded font-medium text-slate-600 hover:bg-slate-100";
+        }
+      });
+      renderOmnichannelList();
+    }
+
+    function renderOmnichannelList() {
+      const listEl = document.getElementById('omnichannelThreadsList');
+      if (!listEl) return;
+
+      const search = (document.getElementById('inboxFilterSearch')?.value || '').toLowerCase();
+
+      let filtered = tickets.filter(t => {
+        if (selectedInboxChannel !== 'All' && t.platform !== selectedInboxChannel && t.channel !== selectedInboxChannel) return false;
+        if (search) {
+          const matchSub = t.subject.toLowerCase().includes(search);
+          const matchCust = t.customer?.name.toLowerCase().includes(search);
+          if (!matchSub && !matchCust) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">No conversations in this channel</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(t => {
+        const lastMsg = t.conversations[t.conversations.length - 1] || { text: t.description, time: 'Just now' };
+        const isSelected = activeOmnichannelTicket && activeOmnichannelTicket.id === t.id;
+
+        const iconHtml = 
+          t.platform === 'Telegram' ? '<i data-lucide="send" class="w-3.5 h-3.5 text-sky-500"></i>' :
+          t.platform === 'Messenger' ? '<i data-lucide="message-circle" class="w-3.5 h-3.5 text-blue-500"></i>' :
+          t.platform === 'Instagram' ? '<i data-lucide="instagram" class="w-3.5 h-3.5 text-pink-500"></i>' :
+          t.platform === 'Email' ? '<i data-lucide="mail" class="w-3.5 h-3.5 text-orange-500"></i>' :
+          '<i data-lucide="globe" class="w-3.5 h-3.5 text-slate-500"></i>';
+
+        return `
+          <div onclick="selectOmnichannelTicket('${t.id}')" class="p-3.5 cursor-pointer transition flex items-start gap-3 hover:bg-slate-100/70 ${isSelected ? 'bg-amber-50/70 border-l-4 border-amber-500' : ''}">
+            <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-700 flex-shrink-0 text-xs border border-slate-200">
+              ${iconHtml}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-xs font-bold text-slate-900 truncate">${t.customer?.name || 'Customer'}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${lastMsg.time}</span>
+              </div>
+              <div class="text-[11px] font-semibold text-slate-700 truncate">${t.subject}</div>
+              <div class="text-[11px] text-slate-500 truncate mt-0.5">${lastMsg.text}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function selectOmnichannelTicket(id) {
+      activeOmnichannelTicket = tickets.find(t => t.id === id);
+      renderOmnichannelList();
+      renderActiveChatWindow();
+    }
+
+    function renderActiveChatWindow() {
+      const windowEl = document.getElementById('omnichannelChatWindow');
+      if (!activeOmnichannelTicket) return;
+
+      const t = activeOmnichannelTicket;
+      const channelBadge = 
+        t.platform === 'Telegram' ? 'channel-telegram' :
+        t.platform === 'Messenger' ? 'channel-messenger' :
+        t.platform === 'Instagram' ? 'channel-instagram' :
+        t.platform === 'Email' ? 'channel-email' : 'channel-portal';
+
+      windowEl.innerHTML = `
+        <div class="h-16 px-6 border-b border-slate-200 flex items-center justify-between bg-slate-50 flex-shrink-0">
+          <div class="flex items-center gap-3">
+            <span class="text-xs px-2.5 py-1 rounded-full font-bold ${channelBadge}">
+              ${t.platform || t.channel}
+            </span>
+            <div>
+              <div class="text-xs font-bold text-slate-900 flex items-center gap-2">
+                <span>${t.customer?.name}</span>
+                <span class="text-[10px] text-slate-400 font-mono">(${t.id})</span>
+              </div>
+              <div class="text-[11px] text-slate-500">${t.subject}</div>
+            </div>
+          </div>
+          <button onclick="openTicketDetailModal('${t.id}')" class="px-3 py-1.5 text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-100 rounded-lg shadow-sm">
+            Manage Lifecycle
+          </button>
+        </div>
+
+        <div id="inboxMsgThread" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scroll bg-slate-50/30">
+          ${t.conversations.map(m => {
+            const isCustomer = m.senderRole === 'Customer';
+            const isNote = m.isInternal;
+            return `
+              <div class="flex flex-col space-y-1 ${isCustomer ? 'items-start' : 'items-end'}">
+                <div class="flex items-center gap-2 text-[10px] text-slate-400 px-1">
+                  <span class="font-bold ${isCustomer ? 'text-sky-700' : 'text-slate-700'}">${m.author}</span>
+                  <span>•</span>
+                  <span>${m.time}</span>
+                  ${isNote ? '<span class="bg-amber-100 text-amber-800 px-1 rounded text-[9px] font-bold">Staff Note</span>' : ''}
+                </div>
+                <div class="max-w-[75%] rounded-2xl p-3.5 text-xs shadow-sm leading-relaxed ${
+                  isNote 
+                    ? 'bg-amber-50 border border-amber-200 text-amber-950 rounded-br-none' 
+                    : isCustomer 
+                      ? 'bg-white border border-slate-200 text-slate-800 rounded-bl-none' 
+                      : 'bg-slate-900 text-white rounded-br-none'
+                }">
+                  ${m.text}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="p-4 bg-white border-t border-slate-200 flex-shrink-0">
+          <div class="flex items-center gap-2 mb-2">
+            <button id="inboxReplyPublic" onclick="setReplyType(false)" class="text-xs font-semibold px-2.5 py-1 rounded bg-amber-400 text-slate-950">
+              Reply to ${t.platform}
+            </button>
+            <button id="inboxReplyInternal" onclick="setReplyType(true)" class="text-xs font-semibold px-2.5 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200">
+              <i data-lucide="lock" class="w-3 h-3 inline mr-1"></i> Staff Note
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="inboxReplyInput" onkeydown="if(event.key==='Enter') submitInboxReply()" type="text" placeholder="Type reply to customer on ${t.platform}..." class="flex-1 text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-amber-400" />
+            <button onclick="submitInboxReply()" class="px-4 py-2.5 bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i> Send
+            </button>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+      const thread = document.getElementById('inboxMsgThread');
+      if (thread) thread.scrollTop = thread.scrollHeight;
+    }
+
+    async function submitInboxReply() {
+      const input = document.getElementById('inboxReplyInput');
+      const text = input.value.trim();
+      if (!text || !activeOmnichannelTicket) return;
+
+      try {
+        const res = await fetch(`/api/tickets/${activeOmnichannelTicket.id}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            author: currentUser.name,
+            senderRole: currentUser.role,
+            text,
+            isInternal: isInternalNote
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          input.value = '';
+          activeOmnichannelTicket = json.ticket;
+          renderActiveChatWindow();
+          showNotification(`Dispatched reply to customer's ${activeOmnichannelTicket.platform}!`);
+        }
+      } catch(e) {}
+    }
+
+    // 12. INBOUND SIMULATION
+    function openSimulationModal() {
+      document.getElementById('simulationModal').classList.remove('hidden');
+    }
+    function closeSimulationModal() {
+      document.getElementById('simulationModal').classList.add('hidden');
+    }
+    async function handleSimulationSubmit(e) {
+      e.preventDefault();
+      const platform = document.getElementById('simPlatform').value;
+      const senderName = document.getElementById('simSender').value.trim();
+      const text = document.getElementById('simText').value.trim();
+
+      try {
+        const res = await fetch('/api/integrations/simulate-incoming', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ platform, senderName, text })
+        });
+        const json = await res.json();
+        closeSimulationModal();
+        showNotification(json.message);
+        switchView('omnichannel');
+      } catch(e) {}
+    }
+
+    // 13. MAIN BOARD (KANBAN)
+    function renderKanban() {
+      const colOpen = document.getElementById('kanbanColOpen');
+      const colProg = document.getElementById('kanbanColInProgress');
+      const colWait = document.getElementById('kanbanColWaiting');
+      const colRes = document.getElementById('kanbanColResolved');
+
+      const openTickets = tickets.filter(t => t.status === 'Open');
+      const progTickets = tickets.filter(t => t.status === 'In Progress');
+      const waitTickets = tickets.filter(t => t.status === 'Waiting for Customer');
+      const resTickets = tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed');
+
+      document.getElementById('kanbanOpenCount').innerText = openTickets.length;
+      document.getElementById('kanbanInProgressCount').innerText = progTickets.length;
+      document.getElementById('kanbanWaitingCount').innerText = waitTickets.length;
+      document.getElementById('kanbanResolvedCount').innerText = resTickets.length;
+
+      const renderCard = (t) => `
+        <div onclick="openTicketDetailModal('${t.id}')" class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition cursor-pointer space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">${t.id}</span>
+            <span class="text-[10px] font-bold text-slate-500">${t.platform || t.channel}</span>
+          </div>
+          <h4 class="text-xs font-bold text-slate-900 line-clamp-2">${t.subject}</h4>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-[10px] text-slate-500">
+            <span>${t.customer?.name}</span>
+            <span class="font-semibold text-slate-700">${t.assignee?.name?.split(' ')[0] || 'Unassigned'}</span>
+          </div>
+        </div>
+      `;
+
+      colOpen.innerHTML = openTickets.map(renderCard).join('') || '<div class="text-xs text-slate-400 text-center py-4">Empty</div>';
+      colProg.innerHTML = progTickets.map(renderCard).join('') || '<div class="text-xs text-slate-400 text-center py-4">Empty</div>';
+      colWait.innerHTML = waitTickets.map(renderCard).join('') || '<div class="text-xs text-slate-400 text-center py-4">Empty</div>';
+      colRes.innerHTML = resTickets.map(renderCard).join('') || '<div class="text-xs text-slate-400 text-center py-4">Empty</div>';
+      lucide.createIcons();
+    }
+
+    // 14. SLA CHARTS
+    function renderCharts() {
+      const pCtx = document.getElementById('chartPriority');
+      if (pCtx) {
+        const counts = {
+          Urgent: tickets.filter(t => t.priority === 'Urgent').length,
+          High: tickets.filter(t => t.priority === 'High').length,
+          Medium: tickets.filter(t => t.priority === 'Medium').length,
+          Low: tickets.filter(t => t.priority === 'Low').length
+        };
+        if (chartPriorityInst) chartPriorityInst.destroy();
+        chartPriorityInst = new Chart(pCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Urgent', 'High', 'Medium', 'Low'],
+            datasets: [{
+              label: 'Tickets',
+              data: [counts.Urgent, counts.High, counts.Medium, counts.Low],
+              backgroundColor: ['#ef4444', '#f97316', '#eab308', '#10b981'],
+              borderRadius: 6
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+      }
+
+      const slaCtx = document.getElementById('chartSla');
+      if (slaCtx) {
+        const slaCounts = {
+          OnTrack: tickets.filter(t => t.health === 'On Track').length,
+          Warning: tickets.filter(t => t.health === 'Warning').length,
+          Breached: tickets.filter(t => t.health === 'Breached').length
+        };
+        if (chartSlaInst) chartSlaInst.destroy();
+        chartSlaInst = new Chart(slaCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['On Track', 'Warning', 'Breached'],
+            datasets: [{
+              data: [slaCounts.OnTrack, slaCounts.Warning, slaCounts.Breached],
+              backgroundColor: ['#10b981', '#f59e0b', '#f43f5e']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+      }
+
+      const chCtx = document.getElementById('chartChannel');
+      if (chCtx) {
+        const chMap = {};
+        tickets.forEach(t => { 
+          const ch = t.platform || t.channel || 'Portal';
+          chMap[ch] = (chMap[ch] || 0) + 1; 
+        });
+        if (chartChannelInst) chartChannelInst.destroy();
+        chartChannelInst = new Chart(chCtx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(chMap),
+            datasets: [{
+              data: Object.values(chMap),
+              backgroundColor: ['#0284c7', '#2563eb', '#c026d3', '#ea580c']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+      }
+
+      const agCtx = document.getElementById('chartAgent');
+      if (agCtx) {
+        const agMap = {};
+        tickets.forEach(t => { 
+          const name = t.assignee?.name || 'Unassigned';
+          agMap[name] = (agMap[name] || 0) + 1; 
+        });
+        if (chartAgentInst) chartAgentInst.destroy();
+        chartAgentInst = new Chart(agCtx, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(agMap),
+            datasets: [{
+              label: 'Assigned',
+              data: Object.values(agMap),
+              backgroundColor: '#6366f1',
+              borderRadius: 6
+            }]
+          },
+          options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+      }
+    }
+
+    // 15. TICKET DETAILS MODAL
+    let activeModalTicket = null;
+    function openTicketDetailModal(id) {
+      activeModalTicket = tickets.find(t => t.id === id);
+      if (!activeModalTicket) return;
+
+      const t = activeModalTicket;
+      document.getElementById('detailTicketId').innerText = t.id;
+      document.getElementById('detailSubject').innerText = t.subject;
+      document.getElementById('detailCustomerName').innerText = t.customer?.name || 'Customer';
+      document.getElementById('detailCustomerEmail').innerText = t.customer?.email || '';
+      document.getElementById('detailChannelBadge').innerText = t.platform || t.channel;
+
+      const st = document.getElementById('detailSelectStatus');
+      if (st) st.value = t.status;
+      const pr = document.getElementById('detailSelectPriority');
+      if (pr) pr.value = t.priority;
+      const as = document.getElementById('detailSelectAssignee');
+      if (as) as.value = t.assignee?.name || 'Unassigned';
+
+      renderModalConversationThread();
+      document.getElementById('ticketDetailModal').classList.remove('hidden');
+    }
+
+    function closeTicketDetailModal() {
+      document.getElementById('ticketDetailModal').classList.add('hidden');
+      activeModalTicket = null;
+    }
+
+    function renderModalConversationThread() {
+      const container = document.getElementById('conversationThreadList');
+      if (!activeModalTicket || !activeModalTicket.conversations) return;
+
+      container.innerHTML = activeModalTicket.conversations.map(c => {
+        const isCustomer = c.senderRole === 'Customer';
+        const isNote = c.isInternal;
+
+        return `
+          <div class="flex flex-col space-y-1 ${isCustomer ? 'items-start' : 'items-end'}">
+            <div class="flex items-center gap-2 text-[10px] text-slate-400 px-1">
+              <span class="font-bold ${isCustomer ? 'text-sky-700' : 'text-slate-800'}">${c.author} (${c.senderRole})</span>
+              <span>•</span>
+              <span>${c.time}</span>
+              ${isNote ? '<span class="bg-amber-100 text-amber-800 px-1 rounded text-[9px] font-bold">Staff Note</span>' : ''}
+            </div>
+            <div class="max-w-[80%] rounded-2xl p-3.5 text-xs shadow-sm leading-relaxed ${
+              isNote 
+                ? 'bg-amber-50 border border-amber-200 text-amber-950 rounded-br-none' 
+                : isCustomer 
+                  ? 'bg-white border border-slate-200 text-slate-800 rounded-bl-none' 
+                  : 'bg-slate-900 text-white rounded-br-none'
+            }">
+              ${c.text}
+            </div>
+          </div>
+        `;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function setReplyType(isInternal) {
+      isInternalNote = isInternal;
+      const pub = document.getElementById('replyTypePublic');
+      const int = document.getElementById('replyTypeInternal');
+      if (pub && int) {
+        if (isInternal) {
+          int.className = "text-xs font-semibold px-3 py-1 rounded bg-amber-500 text-slate-900 shadow-sm";
+          pub.className = "text-xs font-semibold px-3 py-1 rounded bg-slate-100 text-slate-600";
+        } else {
+          pub.className = "text-xs font-semibold px-3 py-1 rounded bg-amber-400 text-slate-900 shadow-sm";
+          int.className = "text-xs font-semibold px-3 py-1 rounded bg-slate-100 text-slate-600";
+        }
+      }
+    }
+
+    async function submitTicketReply() {
+      const text = document.getElementById('replyInputText').value.trim();
+      if (!text || !activeModalTicket) return;
+
+      try {
+        const res = await fetch(`/api/tickets/${activeModalTicket.id}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            author: currentUser.name,
+            senderRole: currentUser.role,
+            text,
+            isInternal: isInternalNote
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          document.getElementById('replyInputText').value = '';
+          activeModalTicket = json.ticket;
+          renderModalConversationThread();
+          fetchTickets();
+          showNotification('Reply sent successfully');
+        }
+      } catch(e) {}
+    }
+
+    async function updateTicketStatus(status) {
+      if (!activeModalTicket) return;
+      await fetch(`/api/tickets/${activeModalTicket.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-user-role': currentUser.role },
+        body: JSON.stringify({ status })
+      });
+      fetchTickets();
+      showNotification(`Status updated to ${status}`);
+    }
+
+    async function updateTicketPriority(priority) {
+      if (!activeModalTicket) return;
+      await fetch(`/api/tickets/${activeModalTicket.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-user-role': currentUser.role },
+        body: JSON.stringify({ priority })
+      });
+      fetchTickets();
+      showNotification(`Priority updated to ${priority}`);
+    }
+
+    async function updateTicketAssignee(assigneeName) {
+      if (!activeModalTicket) return;
+      await fetch(`/api/tickets/${activeModalTicket.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-user-role': currentUser.role },
+        body: JSON.stringify({ assigneeName })
+      });
+      fetchTickets();
+      showNotification(`Ticket assigned to ${assigneeName}`);
+    }
+
+    function quickResolveTicket() {
+      updateTicketStatus('Resolved');
+      closeTicketDetailModal();
+    }
+
+    function showNotification(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
