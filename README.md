@@ -1,4 +1,4 @@
-# QueryX: Customer Support & Operations Operations Suite
+# QueryX: Omnichannel Customer Support & Analytics Platform
 
 QueryX is an enterprise-grade customer support, ticketing, and business analytics platform designed for support organizations and operations directors. It provides centralized omnichannel messaging, automated ticket ingestion, performance analytics, and billing management without manual reporting.
 
@@ -23,7 +23,7 @@ Tickets are automatically ingested and routed to support agents based on departm
 - Real-time synchronization powered by WebSockets.
 - Direct-to-platform replies: Agents respond inside QueryX, and the response is automatically dispatched to the customer's origin platform.
 
-### 3. Business Analyzes & Automata Engine
+### 3. Business Analytics & Automation
 Real-time analytics computed directly from live database transactions without manual data manipulation:
 - Problem Fixed Rate: Automatically calculates completion percentages against incoming volume.
 - Customer Major Issues: Categorizes weekly root-cause distribution (Technical, Billing, Account).
@@ -41,6 +41,18 @@ A dedicated systems flowchart tab illustrating the dynamic interaction between e
 
 ### 6. Team & Employee Provisioning
 Administrators can onboard new agents and employees, assign departments, and configure credentials directly from the console.
+### 7. Integration Status
+
+
+| Channel | Status |
+|---|---|
+| Telegram Bot | Working / Demo / Planned |
+| Facebook Messenger | Working / Demo / Planned |
+| Instagram Direct | Working / Demo / Planned |
+| Email Gateway | Working / Demo / Planned |
+
+Testing section: See [TESTING.md](TESTING.md) for test cases and bug reports.
+
 
 ## Project Structure
 
